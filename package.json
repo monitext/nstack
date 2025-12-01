@@ -1,0 +1,16 @@
+{
+  "name": "nstack",
+  "version": "0.0.0",
+  "description": "nstack is minimal utilitie to read the error stack",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "stack-read",
+    "get-current-line",
+    "monitext"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.19.0"
+}
