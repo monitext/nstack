@@ -34,22 +34,27 @@ export class StackLine {
      * @returns An object containing the parsed method name, file path, line, and column.
      */
     public static parse(line: string) {
-        const tokens = line.trim().split(" ");
+        // remove leading "at "
+        const raw = line.trim().replace(/^at\s+/, "");
 
-        // Remove leading "at" if present
-        if (tokens[0]?.trim() === "at") tokens.shift();
+        const pathData = this.extractPathData(raw);
 
-        // Assume the last token is the file path
-        const pathInfo = this.extractFileInfo(tokens.pop() as string);
+        let method: string | undefined = undefined;
 
-        // Remaining tokens form the method name (if any)
-        const method = tokens.length ? tokens.join(" ") : undefined;
+        if (pathData) {
+            // Remove only the matched path portion (the last occurrence)
+            method = raw.slice(0, raw.lastIndexOf(pathData.matched)).trim();
+            if (method === "") method = undefined;
+        }
 
         return {
             method,
-            ...pathInfo,
+            file: pathData?.file,
+            line: pathData?.line,
+            column: pathData?.column,
         };
     }
+
 
     // ---------------------
     // Regex helper for path detection
@@ -64,14 +69,16 @@ export class StackLine {
         const prefixOptions = [
             "\\/",        // Unix root /
             "\\~\\/",     // ~/ home
-            "\\w+:\\/",   // Windows drive or protocol like C:/, file:/, http:/
-            "\\w+:\\w+",  // Fallback for weird prefixes like webpack://
+            "\\w+:\\w",  // Fallback for weird prefixes like webpack://
+            "\\w+:\\/",   // Windows drive mixed slash & file:/, http:/
+            "\\w+:\\\\",   // Windows drive or protocol like C:\,
         ].join("|");
 
         const prefix = `(${prefixOptions})`;
-        const filePart = "([\\/\\w\\s\\-_.:@]+)";
+        const filePart = "([\\/\\w\\s\\-_.:@\\\\]+)";
         const coordPart = `\\??((:\\d+){${coordCount}})`;
 
+        console.log(`\\(?${prefix}${filePart}${coordPart}\\)?`)
         return new RegExp(`\\(?${prefix}${filePart}${coordPart}\\)?`);
     }
 
@@ -88,12 +95,30 @@ export class StackLine {
         for (let coords = 2; coords >= 1; coords--) {
             const match = raw.match(this.pathRegex(coords));
             if (match) {
-                const [, prefix, filePart, coordPart] = match;
+                const [matched, prefix, filePart, coordPart] = match;
                 const coordsArray = coordPart.slice(1).split(":").map(Number); // [line, column]
-                return { file: prefix + filePart, coordPart, coords: coordsArray };
+                return { 
+                    matched, 
+                    file: prefix + filePart, 
+                    coordPart, 
+                    coords: coordsArray, 
+                    line: coordsArray[0] ?? null, 
+                    column: coordsArray[1] ?? (coordsArray[0] ? 1 : null) 
+                };
             }
         }
         return null;
+    }
+
+    public static removePathPart(raw: string) {
+        for (let coords = 2; coords >= 1; coords--) {
+            const regex = this.pathRegex(coords);
+            const match = raw.match(regex);
+            if (match) {
+                return raw.replace(regex, "")
+            }
+        }
+        return raw
     }
 
     // ---------------------
