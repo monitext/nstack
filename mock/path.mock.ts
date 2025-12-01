@@ -1,4 +1,5 @@
 import { StackLine } from "../src/lib/path";
+
 console.log([
     // --- Node.js basic ---
     "    at myFn (/home/cat/dev/app.js:12:3)",
@@ -60,4 +61,4 @@ console.log([
     // --- Anonymous eval ---
     "    at eval (eval at doThing (http://localhost:3000/app.js:50:10), <anonymous>:1:1)"
     
-].map(s => new StackLine(s)));
+].map(s => StackLine.extractPathData(s)));
