@@ -90,9 +90,12 @@ describe("StackLine.splitAtPathPart", () => {
     const results = parseArr(Paths["Unix-like Paths (Linux/macOS)"]);
 
     expect(results[0]).toEqual({
-      filePart: "/home/cat/dev/app.js",
+      matched: "(/home/cat/dev/app.js:12:3)",
+      file: "/home/cat/dev/app.js",
       coordPart: ":12:3",
       coords: [12, 3],
+      line: 12,
+      column: 3,
     });
   });
 
@@ -100,9 +103,12 @@ describe("StackLine.splitAtPathPart", () => {
     const results = parseArr(Paths["Windows Paths"]);
 
     expect(results[0]).toEqual({
-      filePart: "C:\\dev\\project\\src\\index.ts",
+      matched: "(C:\\dev\\project\\src\\index.ts:13:2)",
+      file: "C:\\dev\\project\\src\\index.ts",
       coordPart: ":13:2",
       coords: [13, 2],
+      line: 13,
+      column: 2,
     });
   });
 
@@ -110,9 +116,12 @@ describe("StackLine.splitAtPathPart", () => {
     const results = parseArr(Paths["Network & Protocol URLs (http/file)"]);
 
     expect(results[0]).toEqual({
-      filePart: "http://localhost:5173/src/main.ts",
+      matched: "(http://localhost:5173/src/main.ts:25:16)",
+      file: "http://localhost:5173/src/main.ts",
       coordPart: ":25:16",
       coords: [25, 16],
+      line: 25,
+      column: 16,
     });
   });
 
@@ -120,9 +129,12 @@ describe("StackLine.splitAtPathPart", () => {
     const results = parseArr(Paths["Runtime Internals (Node/Bun)"]);
 
     expect(results[0]).toEqual({
-      filePart: "node:internal/modules/cjs/helpers",
+      matched: "node:internal/modules/cjs/helpers:12",
+      file: "node:internal/modules/cjs/helpers",
       coordPart: ":12",
       coords: [12],
+      line: 12,
+      column: 1,
     });
   });
 
@@ -130,9 +142,12 @@ describe("StackLine.splitAtPathPart", () => {
     const results = parseArr(Paths["Virtual, Eval & Build Tools"]);
 
     expect(results[0]).toEqual({
-      filePart: "http://localhost:5173/@fs/home/cat/project/src/App.tsx",
+      matched: "(http://localhost:5173/@fs/home/cat/project/src/App.tsx:30:12)",
+      file: "http://localhost:5173/@fs/home/cat/project/src/App.tsx",
       coordPart: ":30:12",
       coords: [30, 12],
+      line: 30,
+      column: 12,
     });
   });
 
@@ -140,9 +155,12 @@ describe("StackLine.splitAtPathPart", () => {
     const results = parseArr(Paths["Non-V8 Formats (Firefox/SpiderMonkey)"]);
 
     expect(results[0]).toEqual({
-      filePart: "http://localhost:3000/src/main.ts",
+      matched: "http://localhost:3000/src/main.ts:42:17",
+      file: "http://localhost:3000/src/main.ts",
       coordPart: ":42:17",
       coords: [42, 17],
+      line: 42,
+      column: 17,
     });
   });
 });
