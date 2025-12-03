@@ -61,11 +61,20 @@ export class StackLine {
     // ---------------------
 
     /**
-     * Generates a regular expression for detecting file paths with optional line/column coordinates.
-     * @param coordCount - The number of coordinate parts to match (default is 2 for line and column).
-     * @returns A regular expression for matching file paths with coordinates.
-     */
-    private static pathRegex(coordCount: number = 2): RegExp {
+    * Returns a list of three-slotted regular expressions for extracting path information.
+    *
+    * Each regex captures three groups:
+    * 1. `prefix`   – Path prefix, e.g., "/", "~/", "C:\", or protocol like "file:", "http:", "webpack:"
+    * 2. `filePath` – The main file path (Unix, Windows, Linux, etc.)
+    * 3. `coordPart` – Optional coordinates, e.g., ":line" or ":line:column"
+    *
+    * Ordering matters when matching:
+    * - `genericPath` should be tested first, as it covers standard filesystem paths and protocols.
+    * - `nativePath` covers symbolic/internal paths like "module:line:col", split_name:line:col, or dash-name:line:col.
+    *
+    * @returns An array of regular expressions for path extraction.
+    */
+    private static pathRegex(): RegExp[] {
         const prefixOptions = [
             "\\/",        // Unix root /
             "\\~\\/",     // ~/ home
@@ -76,10 +85,60 @@ export class StackLine {
 
         const prefix = `(${prefixOptions})`;
         const filePart = "([\\/\\w\\s\\-_.:@\\\\]+)";
-        const coordPart = `\\??((:\\d+){${coordCount}})`;
+        
+        const coordPart = `\\??(:\\d+)`;
+        const coordPart2 = `\\??(:\\d+:\\d+)`;
 
-        console.log(`\\(?${prefix}${filePart}${coordPart}\\)?`)
-        return new RegExp(`\\(?${prefix}${filePart}${coordPart}\\)?`);
+        const nativePath = `([\\w-_\\.]+)()`;
+        const genericPath = `${prefix}${filePart}`
+
+        return [
+            /**
+             * Handles filesystem and protocol paths:
+             * - Windows (C:\path\to\file)
+             * - Unix/Linux (/home/user/file)
+             * - Protocol paths (file:, http:, webpack://)
+             */
+            genericPath,
+
+            /**
+             * Handles symbolic/internal paths:
+             * - split_name:line:col
+             * - dash-name:line:col
+             * - virtual sources like "native:1:11"
+             */
+            nativePath
+        ]
+        .map(path => [
+            `\\(?${path}${coordPart2}\\)?`,
+            `\\(?${path}${coordPart}\\)?`
+        ])
+        .flat()
+        .map(path => new RegExp(path));
+    }
+
+
+    public static tryPathExtraction(raw: string) {
+
+        const regexps = this.pathRegex();
+
+        for (const exp of regexps) {
+            const match = raw.match(exp);
+            console.log(match);
+
+            if (!match) continue;
+
+            const [matched, prefix, filePart, coordPart] = match;
+
+            return {
+                matched,
+                prefix,
+                filePart,
+                coordPart
+            };
+        }
+
+        return null;
     }
 
     // ---------------------
@@ -92,33 +151,32 @@ export class StackLine {
      * @returns An object containing the file path, coordinate part, and coordinates array, or `null` if no match is found.
      */
     public static extractPathData(raw: string) {
-        for (let coords = 2; coords >= 1; coords--) {
-            const match = raw.match(this.pathRegex(coords));
-            if (match) {
-                const [matched, prefix, filePart, coordPart] = match;
-                const coordsArray = coordPart.slice(1).split(":").map(Number); // [line, column]
-                return { 
-                    matched, 
-                    file: prefix + filePart, 
-                    coordPart, 
-                    coords: coordsArray, 
-                    line: coordsArray[0] ?? null, 
-                    column: coordsArray[1] ?? (coordsArray[0] ? 1 : null) 
-                };
-            }
+
+        const match = this.tryPathExtraction(raw);
+
+        if (match) {
+            const { matched, prefix, filePart, coordPart } = match;
+            console.log(matched, match)
+            const coordsArray = coordPart.slice(1).split(":").map(Number); // [line, column]
+            return {
+                matched,
+                file: prefix + filePart,
+                coordPart,
+                coords: coordsArray,
+                line: coordsArray[0] ?? null,
+                column: coordsArray[1] ?? (coordsArray[0] ? 1 : null)
+            };
         }
+
+ 
         return null;
     }
 
-    public static removePathPart(raw: string) {
-        for (let coords = 2; coords >= 1; coords--) {
-            const regex = this.pathRegex(coords);
-            const match = raw.match(regex);
-            if (match) {
-                return raw.replace(regex, "")
-            }
-        }
-        return raw
+    public static removePathPart(raw: string, withStr = "") {
+        const match = this.tryPathExtraction(raw);
+        return match
+                ? raw.replace(match.matched, withStr)
+                : raw;
     }
 
     // ---------------------
