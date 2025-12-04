@@ -156,18 +156,15 @@ export class StackLine {
 
         if (match) {
             const { matched, prefix, filePart, coordPart } = match;
-            console.log(matched, match)
-            const coordsArray = coordPart.slice(1).split(":").map(Number); // [line, column]
-            return {
+            const coordinates = this.extractCoordinates(coordPart);
+            console.log(matched, match);
+            return {            
                 matched,
-                file: prefix + filePart,
+                file: this.normalize(prefix + filePart),
                 coordPart,
-                coords: coordsArray,
-                line: coordsArray[0] ?? null,
-                column: coordsArray[1] ?? (coordsArray[0] ? 1 : null)
+                ...coordinates
             };
         }
-
  
         return null;
     }
@@ -180,41 +177,25 @@ export class StackLine {
     }
 
     // ---------------------
-    // Extract file info with line/column
-    // ---------------------
-
-    /**
-     * Extracts file information (file path, line, and column) from a string.
-     * @param path - The string containing the file path and optional coordinates.
-     * @returns An object containing the normalized file path, line, and column.
-     */
-    private static extractFileInfo(path: string) {
-        const normalized = this.normalize(path);
-        const coords = this.extractCoordinates(normalized);
-        const file = normalized.replace(/:(\d+):(\d+)$|:(\d+)$/, "");
-        return {
-            file,
-            ...coords,
-        };
-    }
-
-    // ---------------------
     // Extract coordinates from path
     // ---------------------
 
     /**
      * Extracts line and column numbers from a file path string.
      * @param path - The file path string containing optional line and column numbers.
-     * @returns An object containing the line and column numbers, or `undefined` if not present.
+     * @returns An object containing the line and column numbers, if not present.
      */
-    private static extractCoordinates(path: string) {
-        const m2 = path.match(/:(\d+):(\d+)$/);
-        if (m2) return { line: +m2[1], column: +m2[2] };
-
-        const m1 = path.match(/:(\d+)$/);
-        if (m1) return { line: +m1[1], column: 0 };
-
-        return { line: undefined, column: undefined };
+    private static extractCoordinates(coordStr: string) {
+        const coords = coordStr.slice(1).split(":").map(Number) as (
+            | [line: number, column: number] 
+            | [line: number] 
+            | []
+        );
+        return {
+            coords,
+            line: coords[0] ?? null,
+            column: coords[1] ?? (coordStr[0] ? 1 : null)
+        };
     }
 
     // ---------------------
