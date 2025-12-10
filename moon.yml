@@ -1,0 +1,20 @@
+language: typescript
+
+layer: library
+
+tasks:
+  build:
+    command: pnpm
+    args:
+      - "run"
+      - "build"
+
+    inputs:
+      - 'src/**/*'         # All source files
+      - 'tsconfig.json'    # The TypeScript compiler configuration
+      - 'package.json'     # The package definition (contains the 'build' script)
+      - 'pnpm-lock.yaml'   # The lockfile (for dependency stability)
+      - 'moon.yml'
+
+    outputs:
+      - "dist"

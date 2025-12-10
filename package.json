@@ -25,6 +25,7 @@
     "bundle": "pnpm node ./bundle.js"
   },
   "main": "dist/cjs/main.js",
+  "type": "module",
   "module": "dist/esm/main.mjs",
   "types": "dist/main.d.ts",
   "exports": {
