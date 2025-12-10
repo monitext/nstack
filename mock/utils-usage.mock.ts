@@ -1,3 +1,4 @@
+import { lookUp } from "../src/lib/look";
 import { StackUtils } from "../src/lib/utils";
 
 function mock (){
@@ -9,7 +10,11 @@ function mock (){
         stack: stack as any
     })
 
-    console.log(result)
+    console.log(lookUp({
+        err,
+        method: "mock",
+        offset: 0
+    }))
 }
 
 mock()
