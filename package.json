@@ -1,22 +1,62 @@
 {
-  "name": "nstack",
+  "name": "@monitext/nstack",
   "version": "0.0.0",
   "description": "nstack is minimal utilitie to read the error stack",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [
     "stack-read",
     "get-current-line",
-    "monitext"
+    "monitext",
+    "error-stack",
+    "stack-utils",
+    "stack-trace",
+    "stack-frame",
+    "stack-inspector",
+    "adaptive-lookup",
+    "js-error",
+    "typescript",
+    "logging",
+    "debug-tools"
   ],
-  "author": "",
+  "scripts": {
+    "build": "tsup src/main.ts --format cjs,esm --dts --out-dir dist && npm run copy-src && npm run bundle",
+    "copy-src": "cp -r src dist/src",
+    "bundle": "pnpm node ./bundle.js"
+  },
+  "main": "dist/cjs/main.js",          
+  "module": "dist/esm/main.mjs",       
+  "types": "dist/main.d.ts",            
+  "exports": {
+    ".": {
+      "import": "./dist/esm/main.mjs",
+      "require": "./dist/cjs/main.js",
+      "types": "./dist/main.d.ts"
+    },
+    "./src": {
+      "import": "./dist/src",
+      "require": "./dist/src"
+    },
+    "./js": {
+      "import": "./dist/src-js/lib.js",
+      "require": "./dist/src-js/lib.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "author": "ctlinker",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.19.0",
   "devDependencies": {
     "@types/bun": "^1.3.4",
     "@types/deno": "^2.5.0",
     "@types/node": "^24.10.2",
-    "vitest": "^4.0.14"
+    "vitest": "^4.0.14",
+    "tsup": "^7.0.0",
+    "esbuild": "^0.21.0",
+    "terser": "^5.20.0",
+    "typescript": "^5.2.2"
   }
 }
