@@ -21,23 +21,21 @@ export class StackFrame {
         const paths = rawInputs.map(input => StackFrame.backwardPathExtraction(input));
 
         let pathData: ReturnType<typeof StackFrame["processExtractedPath"]>;
+        let bestIndex = 0;
 
-        switch (paths.length) {
-            case 0:
-                return null;
-            case 1:
-                pathData = StackFrame.processExtractedPath(paths[0]);
-                break;
-            default:
-                pathData = StackFrame.processExtractedPath(StackFrame.rankPaths(paths));
-                break;
+        if(paths.length == 0){
+            return null
+        } else if (paths.length >= 2){
+            bestIndex = StackFrame.rankPaths(paths)
         }
+
+        pathData = StackFrame.processExtractedPath(paths[bestIndex])
 
         if (!pathData.pathString) {
             return pathData; // no method possible
         }
 
-        const method = StackFrame.extractMethod(raw, pathData.pathString);
+        const method = StackFrame.extractMethod(paths[bestIndex] as any as string, pathData.pathString);
 
         return {
             ...pathData,
@@ -126,7 +124,8 @@ export class StackFrame {
             }
         }
 
-        return paths[best[1] ?? 0];
+        let index = best[1] ?? 0
+        return index;
     }
 
 
