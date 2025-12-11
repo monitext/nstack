@@ -14,7 +14,7 @@ export class StackFrame {
 
     public static parseLine(raw: string) {
         const rawInputs = raw.trim()
-            .split(/^at|\sat\s/g)
+            .split(/^at\s|\s\(?at\s/g)
             .filter(i => i.trim() != "")
             .map(i => i.trim());
 
@@ -34,8 +34,16 @@ export class StackFrame {
         if (!pathData.pathString) {
             return pathData; // no method possible
         }
+        let rawChunk: string = raw; // Starts with the whole input
+        
+        // Checks if there's a *previous* path (paths[bestIndex - 1])
+        if(paths[bestIndex - 1] && paths[bestIndex - 1]?.pathString?.trim() != ""){
+            // If yes, slice the original raw string starting from the last occurrence 
+            // of the *previous* path string.
+            rawChunk = raw.slice(raw.lastIndexOf((paths[bestIndex - 1] as any).pathString as string))
+        }
 
-        const method = StackFrame.extractMethod(paths[bestIndex] as any as string, pathData.pathString);
+        const method = StackFrame.extractMethod(rawChunk, pathData.pathString);
 
         return {
             ...pathData,
@@ -298,6 +306,7 @@ export class StackFrame {
     "at spacedMethod (C:/Program Files/My App/file.js:22:7)",
     "fetchData https://example.com/assets/app.js:99:13",
     "at buildStep (git+ssh://repo.com/project/src/mod.ts:14:3)",
-    "crazy <comp> 💀/dev/http:thing/C:/tmp  /🔥/file.ts:3:1"
+    "crazy <comp> 💀/dev/http:thing/C:/tmp  /🔥/file.ts:3:1",
+    "at eval mockup /🔥/file.ts:3:1 (at <anonumous>:5)"
 ].map(StackFrame.parseLine).every(console.log);
 
