@@ -9,7 +9,7 @@ export class StackFrame {
     fullPath!: string; 
 
     constructor(line: string){
-        Object.assign(StackFrame.parseLine(line) ?? {})
+        Object.assign(this, StackFrame.parseLine(line) ?? {})
     }
 
     public static parseLine(raw: string) {
@@ -34,15 +34,8 @@ export class StackFrame {
         if (!pathData.pathString) {
             return pathData; // no method possible
         }
-        let rawChunk: string = raw; // Starts with the whole input
-        
-        // Checks if there's a *previous* path (paths[bestIndex - 1])
-        if(paths[bestIndex - 1] && paths[bestIndex - 1]?.pathString?.trim() != ""){
-            // If yes, slice the original raw string starting from the last occurrence 
-            // of the *previous* path string.
-            rawChunk = raw.slice(raw.lastIndexOf((paths[bestIndex - 1] as any).pathString as string))
-        }
 
+        const rawChunk = rawInputs[bestIndex];
         const method = StackFrame.extractMethod(rawChunk, pathData.pathString);
 
         return {
@@ -64,8 +57,8 @@ export class StackFrame {
         // Remove leading "at "
         before = before.replace(/^at\s+/, "");
 
-        // Remove trailing "("
-        before = before.replace(/\($/, "").trim();
+        // Remove trailing and leading ")|("
+        before = before.replace(/^\(|\($/g, "").trim();
 
         // Clean method separators like @
         before = before.replace(/@$/, "").trim();
@@ -307,6 +300,8 @@ export class StackFrame {
     "fetchData https://example.com/assets/app.js:99:13",
     "at buildStep (git+ssh://repo.com/project/src/mod.ts:14:3)",
     "crazy <comp> 💀/dev/http:thing/C:/tmp  /🔥/file.ts:3:1",
-    "at eval mockup /🔥/file.ts:3:1 (at <anonumous>:5)"
-].map(StackFrame.parseLine).every(console.log);
+    "at (eval mockup /🔥/file.ts:3:1 (at <anonumous>2:5)",
+    "at (less:1:1) at mock (git+ssh://repo.com/project/src/mod.ts:14:3)"
+].map(StackFrame.parseLine)
+.every(console.log);
 
