@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { StackFrameCollector } from "../src-alt/stack-frame";
+import { StackFrameDescriptor } from "../src-alt/stack-frame";
 import { StackFrame } from "../src-alt/types/stack-frame";
 
-describe(StackFrameCollector, ()=>{
+describe(StackFrameDescriptor, ()=>{
     const sample = [     
         "at Object.<anonymous> (/Users/Cal l  Hs/Projects/My App/index.js:10:15) at some noise test/787/:1:?",
        
@@ -14,7 +14,7 @@ describe(StackFrameCollector, ()=>{
     ]
 
     it("should properly extract paths not matter the noise", ()=>{
-        const frame = new StackFrameCollector(sample[0]);
+        const frame = new StackFrameDescriptor(sample[0]);
         expect(frame).toMatchObject<StackFrame>({
             rawInput: sample[0],
             method: "Object.<anonymous>",

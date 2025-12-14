@@ -1,8 +1,8 @@
 import { IntermediateStackFrame, StackFrame } from './types/stack-frame';
-import { CoordinateCollector } from "./coordinate-collector";
+import { CoordinateDescriptor } from "./coordinate-collector";
 import { Nullable } from "./types/type-utils";
 
-export class StackFrameCollector implements StackFrame {
+export class StackFrameDescriptor implements StackFrame {
 
     rawInput!: string
     filePath!: Nullable<string>
@@ -11,15 +11,15 @@ export class StackFrameCollector implements StackFrame {
     line!: Nullable<number>
     col!: Nullable<number>
 
-    constructor(raw: string) {
-        Object.assign(this, StackFrameCollector.collect(raw))
+    constructor(raw: string | StackFrame) {
+        Object.assign(this, typeof raw === "string" ? StackFrameDescriptor.from(raw) : raw)
     }
 
-    public static collect(raw: string): StackFrame {
+    public static from(raw: string): StackFrame {
         const rawInputs = raw.trim().split(/^at\s|\sat\s|\(?at\s|\sat\)?/).filter(i => i.trim() != "");
-        const inputChunks = rawInputs.map(i => StackFrameCollector.reversePathExtraction(i))
+        const inputChunks = rawInputs.map(i => StackFrameDescriptor.reversePathExtraction(i))
         const [_, bestChunk] = this.rankPaths(inputChunks);
-        const method = StackFrameCollector.tryMethodExtractionOn(rawInputs[_], bestChunk);
+        const method = StackFrameDescriptor.tryMethodExtractionOn(rawInputs[_], bestChunk);
         return {
             rawInput: raw,
             ...bestChunk,
@@ -72,7 +72,7 @@ export class StackFrameCollector implements StackFrame {
 
         let bestIndex = 0;
         let bestScore: Nullable<number> = null;
-        let points = StackFrameCollector.rankingPoints
+        let points = StackFrameDescriptor.rankingPoints
 
         for (const [index, path] of paths.entries()) {
             const current = path.filePath;
@@ -125,7 +125,7 @@ export class StackFrameCollector implements StackFrame {
 
     public static reversePathExtraction(raw: string): IntermediateStackFrame {
         const rawInput = raw.trim();
-        const coords = new CoordinateCollector(raw);
+        const coords = new CoordinateDescriptor(raw);
 
         if (!coords.rawCoord) {
             return {
@@ -175,7 +175,7 @@ export class StackFrameCollector implements StackFrame {
         }
 
         return {
-            filePath: StackFrameCollector.normalize(result.reverse().join("")),
+            filePath: StackFrameDescriptor.normalize(result.reverse().join("")),
             ...coords
         }
     }
@@ -186,7 +186,7 @@ export class StackFrameCollector implements StackFrame {
 }
 
 
-[
+const mock = [
     "at myFunc (/usr/local/app/src/index.js:10:2)",
     "at doThing (C:\\Projects\\App\\src\\main.ts:5:1)",
     "at spacedMethod (C:/Program Files/My App/file.js:22:7)",
@@ -195,5 +195,6 @@ export class StackFrameCollector implements StackFrame {
     "crazy <comp> 💀/dev/http:thing/C:/tmp  /🔥/file.ts:3:1",
     "at (eval mockup /🔥/file.ts:3:1 (at <anonumous>2:5)",
     "at (less:1:1) at mock (git+ssh://repo.com/project/src/mod.ts:14:3)"
-].map(s => new StackFrameCollector(s))
-.every(console.log);
+].map(s => new StackFrameDescriptor(s))
+
+console.log(mock)

@@ -1,19 +1,19 @@
 import { Coordinate } from './types/coordinate-collector';
 import { Nullable } from "./types/type-utils";
 
-export class CoordinateCollector implements Coordinate {
+export class CoordinateDescriptor implements Coordinate {
 
     rawCoord!: Nullable<string>
     line!: Nullable<number>
     col!: Nullable<number>
 
     constructor(raw: string) {
-        Object.assign(this, CoordinateCollector.collect(raw));
+        Object.assign(this, CoordinateDescriptor.from(raw));
     }
 
-    public static collect(raw: string): Coordinate {
-        const input = CoordinateCollector.extractCoordinateIn(raw);
-        return CoordinateCollector.parseCoordinate(input);
+    public static from(raw: string): Coordinate {
+        const input = CoordinateDescriptor.extractCoordinateIn(raw);
+        return CoordinateDescriptor.parseCoordinate(input);
     }
 
     static writeCoordinate(
@@ -29,10 +29,10 @@ export class CoordinateCollector implements Coordinate {
 
     private static parseCoordinate(input: Nullable<string>): Coordinate {
         if (!input) {
-            return CoordinateCollector.writeCoordinate(null, null, null);
+            return CoordinateDescriptor.writeCoordinate(null, null, null);
         }
         const [line, column] = input.split(":").filter(s => s.trim() != "").map(s => +s);
-        return CoordinateCollector.writeCoordinate(
+        return CoordinateDescriptor.writeCoordinate(
             input,
             line ?? null,
             column ?? (line ? 1 : null)
@@ -46,7 +46,7 @@ export class CoordinateCollector implements Coordinate {
     ]
 
     private static tryCoordinateExtractionOn(str: string): Nullable<string> {
-        for (const exp of CoordinateCollector.coordinateExtractionRegExp) {
+        for (const exp of CoordinateDescriptor.coordinateExtractionRegExp) {
             const result = str.match(exp);
             if (!result || result[0].trim() === "") continue;
             return result[0]
@@ -70,7 +70,7 @@ export class CoordinateCollector implements Coordinate {
                 buffer.push(rawInput[index]);
             }
 
-            const coord = CoordinateCollector.tryCoordinateExtractionOn(buffer.reverse().join(""));
+            const coord = CoordinateDescriptor.tryCoordinateExtractionOn(buffer.reverse().join(""));
             if (coord) {
                 return coord;
             }

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { CoordinateCollector } from "../src-alt/coordinate-collector";
+import { CoordinateDescriptor } from "../src-alt/coordinate-collector";
 import { Coordinate } from "../src-alt/types/coordinate-collector";
 
-describe(CoordinateCollector, ()=>{
+describe(CoordinateDescriptor, ()=>{
     const paths = [
         "::23:14 ramdom 1, 2 - 3 4 :: noise",
         "null test: some 3 5 7:: 9 bullshit",
@@ -13,7 +13,7 @@ describe(CoordinateCollector, ()=>{
     ]
 
     it("should properly extract :line:col from str", ()=>{
-        const coord = new CoordinateCollector(paths[0]);
+        const coord = new CoordinateDescriptor(paths[0]);
         expect(coord).toMatchObject<Coordinate>({
             rawCoord: ":23:14",
             line: 23,
@@ -22,7 +22,7 @@ describe(CoordinateCollector, ()=>{
     })
 
     it("should properly return null on when no valid coord exist", ()=>{
-        const coord = new CoordinateCollector(paths[1]);
+        const coord = new CoordinateDescriptor(paths[1]);
         expect(coord).toMatchObject<Coordinate>({
             rawCoord: null,
             line: null,
@@ -31,7 +31,7 @@ describe(CoordinateCollector, ()=>{
     })
 
     it("should properly handle :line only case", ()=>{
-        const coord = new CoordinateCollector(paths[2]);
+        const coord = new CoordinateDescriptor(paths[2]);
         expect(coord).toMatchObject<Coordinate>({
             rawCoord: ":4",
             line: 4,
@@ -40,7 +40,7 @@ describe(CoordinateCollector, ()=>{
     })
 
     it("should properly handle edge case :?:?", ()=>{
-        const coord = new CoordinateCollector(paths[3]);
+        const coord = new CoordinateDescriptor(paths[3]);
         expect(coord).toMatchObject<Coordinate>({
             rawCoord: ":?:?",
             line: null,
@@ -49,7 +49,7 @@ describe(CoordinateCollector, ()=>{
     })
 
     it("should properly handle long :line case", ()=>{
-        const coord = new CoordinateCollector(paths[4]);
+        const coord = new CoordinateDescriptor(paths[4]);
         expect(coord).toMatchObject<Coordinate>({
             rawCoord: ":123123",
             line: 123123,
@@ -58,7 +58,7 @@ describe(CoordinateCollector, ()=>{
     })
 
     it("should properly handle long :line:col case", ()=>{
-        const coord = new CoordinateCollector(paths[5]);
+        const coord = new CoordinateDescriptor(paths[5]);
         expect(coord).toMatchObject<Coordinate>({
             rawCoord: ":123123:321321",
             line: 123123,
