@@ -1,5 +1,5 @@
-import { FrameConfidenceScore } from "./confidence-eval";
-import { StackFrame } from "./stack-frame";
+import { FrameConfidenceScore } from "./confidence-evaluator";
+import { StackFrame } from "./stackframe-descriptor";
 
 export interface FrameCollection {
     readonly stack: StackFrame[]

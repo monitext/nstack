@@ -1,13 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { StackFrameDescriptor } from "../src-alt/stack-frame";
+import { StackFrameDescriptor } from "../src-alt/lib/stack-frame";
 import { StackFrame } from "../src-alt/types/stack-frame";
 
 describe(StackFrameDescriptor, ()=>{
     const sample = [     
         "at Object.<anonymous> (/Users/Cal l  Hs/Projects/My App/index.js:10:15) at some noise test/787/:1:?",
-       
         "at /usr/  local/  lib/node_modules/  test-module/lib/index.js:5:3",
-
         "at async doSomething (C:/Users/Call Hs/Projects/My App/src/main.js:45:9)",
         "at Module.runMain (file:///home/user/My Documents/project/server.js:22:5)",
         "at async fetchData (/C:/Users/Public/Downloads/Node Test/utils.js:12:18)",

@@ -1,6 +1,6 @@
-import { IntermediateStackFrame, StackFrame } from './types/stack-frame';
-import { CoordinateDescriptor } from "./coordinate-collector";
-import { Nullable } from "./types/type-utils";
+import { IntermediateStackFrame, StackFrame } from '../types/stackframe-descriptor';
+import { CoordinateDescriptor } from "./coordinate-descriptor";
+import { Nullable } from "../types/type-utils";
 
 export class StackFrameDescriptor implements StackFrame {
 

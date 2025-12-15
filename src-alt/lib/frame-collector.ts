@@ -1,9 +1,9 @@
-import { FrameConfidenceEvaluator } from "./confidence-eval"
-import { StackFrameDescriptor } from "./stack-frame"
-import { EvaluatedFrame, EvaluatedFrameCollection, FrameCollection } from "./types/frame-collector"
-import { StackFrame } from "./types/stack-frame"
+import { FrameConfidenceEvaluator } from "./confidence-evaluator"
+import { StackFrameDescriptor } from "./stackframe-descriptor"
+import { EvaluatedFrame, EvaluatedFrameCollection, FrameCollection } from "../types/frame-collector"
+import { StackFrame } from "../types/stackframe-descriptor"
 
-export class FrameCollector {
+export class FrameCollector implements FrameCollection {
   readonly stack: StackFrame[]
 
   constructor(err: Error) {

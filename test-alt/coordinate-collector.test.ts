@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { CoordinateDescriptor } from "../src-alt/coordinate-collector";
-import { Coordinate } from "../src-alt/types/coordinate-collector";
+import { CoordinateDescriptor } from "../src-alt/lib/coordinate-descriptor";
+import { Coordinate } from "../src-alt/types/coordinate-descriptor";
 
 describe(CoordinateDescriptor, ()=>{
     const paths = [

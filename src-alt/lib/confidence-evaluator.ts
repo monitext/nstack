@@ -1,5 +1,5 @@
-import { FrameConfidenceScore, ConfidenceFactor } from "./types/confidence-eval"
-import { StackFrame } from "./types/stack-frame"
+import { FrameConfidenceScore, ConfidenceFactor } from "../types/confidence-evaluator"
+import { StackFrame } from "../types/stackframe-descriptor"
 
 export class FrameConfidenceEvaluator {
 

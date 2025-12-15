@@ -1,4 +1,4 @@
-import { Coordinate } from "./coordinate-collector";
+import { Coordinate } from "./coordinate-descriptor";
 import { Nullable } from "./type-utils";
 
 export interface StackFrame extends Coordinate {

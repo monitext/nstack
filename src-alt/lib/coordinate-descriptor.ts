@@ -1,5 +1,5 @@
-import { Coordinate } from './types/coordinate-collector';
-import { Nullable } from "./types/type-utils";
+import { Coordinate } from '../types/coordinate-descriptor';
+import { Nullable } from "../types/type-utils";
 
 export class CoordinateDescriptor implements Coordinate {
 
