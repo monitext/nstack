@@ -4,9 +4,12 @@ import { EvaluatedFrame, EvaluatedFrameCollection, FrameCollection } from "../ty
 import { StackFrame } from "../types/stackframe-descriptor"
 
 export class FrameCollector implements FrameCollection {
+  
+  readonly raw: Error
   readonly stack: StackFrame[]
 
   constructor(err: Error) {
+    this.raw = err;
     this.stack = FrameCollector.collect(err)
   }
 

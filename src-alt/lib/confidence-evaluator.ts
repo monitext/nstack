@@ -1,11 +1,13 @@
 import { FrameConfidenceScore, ConfidenceFactor } from "../types/confidence-evaluator"
 import { StackFrame } from "../types/stackframe-descriptor"
 
-export class FrameConfidenceEvaluator {
+export class FrameConfidenceEvaluator implements FrameConfidenceScore {
 
   constructor(input: StackFrame){
     Object.assign(this, FrameConfidenceEvaluator.evaluate(input));
   }
+  score!: number;
+  factors!: ConfidenceFactor[];
 
   static evaluate(frame: StackFrame): FrameConfidenceScore {
     const factors: ConfidenceFactor[] = []
