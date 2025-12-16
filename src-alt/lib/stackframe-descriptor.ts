@@ -18,7 +18,7 @@ export class StackFrameDescriptor implements StackFrame {
     public static from(raw: string): StackFrame {
         const rawInputs = raw.trim().split(/^at\s|\sat\s|\(?at\s|\sat\)?/).filter(i => i.trim() != "");
         const inputChunks = rawInputs.map(i => StackFrameDescriptor.reversePathExtraction(i))
-        const [_, bestChunk] = this.rankPaths(inputChunks);
+        const [_, bestChunk] = StackFrameDescriptor.rankPaths(inputChunks);
         const method = StackFrameDescriptor.tryMethodExtractionOn(rawInputs[_], bestChunk);
         return {
             rawInput: raw,
@@ -197,4 +197,3 @@ const mock = [
     "at (less:1:1) at mock (git+ssh://repo.com/project/src/mod.ts:14:3)"
 ].map(s => new StackFrameDescriptor(s))
 
-console.log(mock)
